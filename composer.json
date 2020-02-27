@@ -1,0 +1,16 @@
+{
+    "name": "dabreu/api-client-skeleton",
+    "description": "Basic API Client/Service Skeleton",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Diego Abreu",
+            "email": "dabreu@adinet.com.uy"
+        }
+    ],
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.1"
+    }
+}
