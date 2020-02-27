@@ -1,2 +1,2 @@
 # ApiClientSkeleton
-Basin API Client Skeleton
+Basic API Client Skeleton
