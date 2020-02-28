@@ -156,17 +156,14 @@ class ApiRequest
     /**
      * Execute and build ApiResponse
      * @return ApiResponse
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function execute()
     {
         $makeCurl = true;
         if (!is_null($cm = Api::getInstance()->getCacheManager())){
-            try {
-                $responseData = $cm->get($this->getRequestHash());
-                $makeCurl = false;
-            }catch(Exception $e){
-                ; // do nothing makeCurl = true
-            }
+            $responseData = $cm->getAdapter()->get($this->getRequestHash());
+            $makeCurl = is_null($responseData);
         }
         if ($makeCurl) {
             $responseData = $this->getApi()
@@ -179,9 +176,10 @@ class ApiRequest
                 ->getResponse();
 
             if (!is_null($cm)){
-                $cm->set($this->getRequestHash(), $responseData);
+                $cm->getAdapter()->set($this->getRequestHash(), $responseData, $cm->getTtl());
             }
         }
+
         return ApiResponse::fromString($responseData);
     }
 

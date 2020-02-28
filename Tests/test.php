@@ -1,10 +1,15 @@
-# ApiClientSkeleton
-Basic API Client/Service
+<?php
+/**
+ * Created by PhpStorm.
+ * User: dabreu
+ * Date: 2/28/20
+ * Time: 10:33 a. m.
+ */
 
+include "vendor/autoload.php";
 
-Usage
-```
-// Initialization
+error_reporting(E_ERROR);
+
 //$cacheAdapter = new \CFG\Cache\Adapter\FilesystemPool('./_cache');
 $mCli = class_exists('Memcached') ? new \Memcached() : new \Memcache();
 $mCli->addServer('localhost', 11211);
@@ -30,4 +35,3 @@ $testInfo = (new \CFG\Objects\Test())
     ->get();
 
 print_r($testInfo->getData());
-```

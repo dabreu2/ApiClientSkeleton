@@ -9,9 +9,10 @@
 namespace CFG;
 
 use CFG\Adapters\Curl;
-use CFG\Cache\ICache;
+use CFG\Adapters\IAdapter;
+use CFG\Cache\CacheManager;
 use Exception;
-use IAdapter;
+use Psr\SimpleCache\CacheInterface;
 
 class Api
 {
@@ -41,9 +42,11 @@ class Api
     private $debug=false;
 
     /**
-     * @var null|ICache
+     * @var CacheManager
      */
     private $cacheManager=null;
+
+
     /**
      * @var IAdapter
      */
@@ -76,10 +79,16 @@ class Api
         }
 
         if (isset($options['cache']) && !empty($options['cache'])){
-            if (!$options['cache'] instanceof ICache){
-                throw new Exception("Cache handler must implements ICache interface");
+            // set cache adapter
+            if (!$options['cache']['adapter'] instanceof CacheInterface){
+                throw new Exception("Cache handler must implements CacheInterface interface");
             }else{
-                $inst->cacheManager = $options['cache'];
+                $inst->cacheManager = new CacheManager($options['cache']['adapter']);
+            }
+
+            // set default ttl
+            if (!empty($options['cache']['ttl'])){
+                $inst->cacheManager->setTtl((int) $options['cache']['ttl']);
             }
         }
 
@@ -138,9 +147,9 @@ class Api
     }
 
     /**
-     * @return ICache|null
+     * @return CacheManager|null
      */
-    public function getCacheManager(): ?ICache
+    public function getCacheManager(): ?CacheManager
     {
         return $this->cacheManager;
     }

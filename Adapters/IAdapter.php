@@ -6,6 +6,8 @@
  * Time: 3:54 p. m.
  */
 
+namespace CFG\Adapters;
+
 interface IAdapter
 {
     /**

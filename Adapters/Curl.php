@@ -8,7 +8,7 @@
 
 namespace CFG\Adapters;
 
-class Curl implements \IAdapter
+class Curl implements IAdapter
 {
     /**
      * @var string
@@ -26,7 +26,7 @@ class Curl implements \IAdapter
      * @param string $uri
      * @param array|null $params
      * @param array|null $extraHeaders
-     * @return \IAdapter
+     * @return IAdapter
      */
     public function execute(string $method, string $uri, ?array $params, array $extraHeaders = [])
     {

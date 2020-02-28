@@ -16,13 +16,14 @@ class Test
 {
     /**
      * @return ApiResponse
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Exception
      */
     public function get()
     {
         $request = new ApiRequest(
             ApiRequest::METHOD_GET,
-            Api::getInstance()->getClientId() . "/" . Api::getInstance()->getServiceId() . "/test"
+            'instances/' . Api::getInstance()->getClientId() . "/services/" . Api::getInstance()->getServiceId()
         );
         return $request->execute();
     }
