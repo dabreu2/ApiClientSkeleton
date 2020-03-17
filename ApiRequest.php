@@ -62,7 +62,7 @@ class ApiRequest
      * @param array|null $params
      * @throws Exception
      */
-    public function __construct(string $method, string $path, ?array $params)
+    public function __construct(string $method, string $path, ?array $params = null)
     {
         $this
             ->setMethod($method)
