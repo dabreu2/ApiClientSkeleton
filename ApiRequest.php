@@ -59,13 +59,15 @@ class ApiRequest
     /**
      * @param string $method
      * @param string $path
+     * @param array|null $params
      * @throws Exception
      */
-    public function __construct(string $method, string $path)
+    public function __construct(string $method, string $path, ?array $params)
     {
         $this
             ->setMethod($method)
-            ->setPath($path);
+            ->setPath($path)
+            ->setParams($params);
     }
 
     /**
@@ -128,7 +130,7 @@ class ApiRequest
      * @param array|null $params
      * @return ApiRequest
      */
-    private function setParams(?array $params): ApiRequest
+    public function setParams(?array $params): ApiRequest
     {
         $this->params = $params;
         return $this;
