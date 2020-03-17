@@ -23,7 +23,7 @@ class Test
     {
         $request = new ApiRequest(
             ApiRequest::METHOD_GET,
-            'instances/' . Api::getInstance()->getClientId() . "/services/" . Api::getInstance()->getServiceId()
+            'instances/' . Api::getInstance()->getContext()['clientId'] . "/services/" . Api::getInstance()->getContext()['serviceId']
         );
         return $request->execute();
     }

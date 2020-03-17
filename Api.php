@@ -22,14 +22,9 @@ class Api
     private static $_instance = null;
 
     /**
-     * @var string
+     * @var $array
      */
-    private $client_id;
-
-    /**
-     * @var string
-     */
-    private $service_id;
+    private $context;
 
     /**
      * @var string
@@ -59,12 +54,11 @@ class Api
      * @param array $options
      * @throws Exception
      */
-    public static function init(string $client_id, string $service_id, string $api_base_uri, array $options = [])
+    public static function init(string $api_base_uri, array $context = [], array $options = [])
     {
         $inst = self::getInstance();
-        $inst->client_id = $client_id;
-        $inst->service_id = $service_id;
         $inst->api_base_uri = rtrim($api_base_uri, '/');
+        $inst->context = $context;
 
         if (empty($inst->api_base_uri)){
             throw new Exception("API base domain missing");
@@ -123,19 +117,11 @@ class Api
 
 
     /**
-     * @return string
+     * @return array
      */
-    public function getClientId(): string
+    public function getContext(): array
     {
-        return $this->client_id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getServiceId(): string
-    {
-        return $this->service_id;
+        return $this->context;
     }
 
     /**

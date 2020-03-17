@@ -12,9 +12,11 @@ $mCli->addServer('localhost', 11211);
 $cacheAdapter = new \CSApi\Cache\Adapter\MemcachePool($mCli);
 
 \CSApi\Api::init(
-    'app1',
-    'service1',
     'http://domain.com/api/v1',
+    [
+        'clientId' => 'app1',
+        'serviceId' => 'service1'
+    ],
     [
         'debug' => true,
         'cache' => [
