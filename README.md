@@ -5,13 +5,13 @@ Basic API Client/Service
 Usage
 ```
 // Initialization
-//$cacheAdapter = new \CFG\Cache\Adapter\FilesystemPool('./_cache');
+//$cacheAdapter = new \CSApi\Cache\Adapter\FilesystemPool('./_cache');
 $mCli = class_exists('Memcached') ? new \Memcached() : new \Memcache();
 $mCli->addServer('localhost', 11211);
 
-$cacheAdapter = new \CFG\Cache\Adapter\MemcachePool($mCli);
+$cacheAdapter = new \CSApi\Cache\Adapter\MemcachePool($mCli);
 
-\CFG\Api::init(
+\CSApi\Api::init(
     'app1',
     'service1',
     'http://domain.com/api/v1',
@@ -26,7 +26,7 @@ $cacheAdapter = new \CFG\Cache\Adapter\MemcachePool($mCli);
 
 
 // Object driven request
-$testInfo = (new \CFG\Objects\Test())
+$testInfo = (new \CSApi\Objects\Test())
     ->get();
 
 print_r($testInfo->getData());

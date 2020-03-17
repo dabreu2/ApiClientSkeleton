@@ -6,7 +6,7 @@
  * Time: 5:22 p. m.
  */
 
-namespace CFG;
+namespace CSApi;
 
 
 use Exception;

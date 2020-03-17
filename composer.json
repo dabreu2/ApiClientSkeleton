@@ -22,11 +22,11 @@
     },
     "autoload": {
         "psr-4": {
-            "CFG\\": "./",
-            "CFG\\Cache\\Adapter\\": "Cache/",
-            "CFG\\Cache\\": "Cache/",
-            "CFG\\Objects\\": "Objects/",
-            "CFG\\Adapters\\": "Adapters/"
+            "CSApi\\": "./",
+            "CSApi\\Cache\\Adapter\\": "Cache/",
+            "CSApi\\Cache\\": "Cache/",
+            "CSApi\\Objects\\": "Objects/",
+            "CSApi\\Adapters\\": "Adapters/"
         }
     }
 }

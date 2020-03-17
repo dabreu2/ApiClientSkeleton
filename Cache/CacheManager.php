@@ -6,7 +6,7 @@
  * Time: 10:43 a. m.
  */
 
-namespace CFG\Cache;
+namespace CSApi\Cache;
 
 
 use Psr\SimpleCache\CacheInterface;

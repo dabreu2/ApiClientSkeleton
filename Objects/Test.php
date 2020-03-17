@@ -6,11 +6,11 @@
  * Time: 5:15 p. m.
  */
 
-namespace CFG\Objects;
+namespace CSApi\Objects;
 
-use CFG\Api;
-use CFG\ApiRequest;
-use CFG\ApiResponse;
+use CSApi\Api;
+use CSApi\ApiRequest;
+use CSApi\ApiResponse;
 
 class Test
 {

@@ -6,11 +6,11 @@
  * Time: 5:13 p. m.
  */
 
-namespace CFG;
+namespace CSApi;
 
-use CFG\Adapters\Curl;
-use CFG\Adapters\IAdapter;
-use CFG\Cache\CacheManager;
+use CSApi\Adapters\Curl;
+use CSApi\Adapters\IAdapter;
+use CSApi\Cache\CacheManager;
 use Exception;
 use Psr\SimpleCache\CacheInterface;
 

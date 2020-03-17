@@ -6,7 +6,7 @@
  * Time: 9:30 a. m.
  */
 
-namespace CFG\Cache\Adapter;
+namespace CSApi\Cache\Adapter;
 
 
 use Cache\Adapter\Common\AbstractCachePool;

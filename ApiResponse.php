@@ -6,7 +6,7 @@
  * Time: 5:56 p. m.
  */
 
-namespace CFG;
+namespace CSApi;
 
 
 class ApiResponse implements \JsonSerializable
