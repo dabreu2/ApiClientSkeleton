@@ -41,22 +41,29 @@ class Api
      */
     private $cacheManager=null;
 
-
     /**
      * @var IAdapter
      */
     private $clientAdapter;
 
     /**
-     * @param string $client_id
-     * @param string $service_id
+     * @var bool
+     */
+    private $initialized = false;
+
+    /**
      * @param string $api_base_uri
+     * @param array $context
      * @param array $options
      * @throws Exception
      */
     public static function init(string $api_base_uri, array $context = [], array $options = [])
     {
-        $inst = self::getInstance();
+        try {
+            $inst = self::getInstance();
+        }catch(Exception $e){
+            $inst = self::$_instance;
+        }
         $inst->api_base_uri = rtrim($api_base_uri, '/');
         $inst->context = $context;
 
@@ -95,14 +102,20 @@ class Api
         }else{
             $inst->clientAdapter = new Curl();
         }
+
+        $inst->initialized = true;
     }
 
     /**
      * @return Api
+     * @throws Exception
      */
     public static function getInstance(){
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
+        }
+        if (!self::$_instance->initialized){
+            throw new Exception("Api not initialized");
         }
         return self::$_instance;
     }
