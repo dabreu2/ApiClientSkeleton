@@ -55,6 +55,7 @@ class Api
      * @param string $api_base_uri
      * @param array $context
      * @param array $options
+     * @return Api
      * @throws Exception
      */
     public static function init(string $api_base_uri, array $context = [], array $options = [])
@@ -104,6 +105,8 @@ class Api
         }
 
         $inst->initialized = true;
+
+        return $inst;
     }
 
     /**
