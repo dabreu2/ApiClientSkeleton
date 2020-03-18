@@ -138,7 +138,8 @@ class Api
      */
     public function log(string $message, $level = E_WARNING){
         if (!is_null($this->logger)){
-            $this->logger($message, $level);
+            $logger = $this->logger;
+            $logger($message, $level);
         }
     }
 
