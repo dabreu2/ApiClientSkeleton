@@ -72,6 +72,7 @@ class ApiRequest
 
     /**
      * @return Api
+     * @throws Exception
      */
     private function getApi(){
         return Api::getInstance();
@@ -114,7 +115,7 @@ class ApiRequest
      */
     private function setPath(string $path): ApiRequest
     {
-        $this->path = $path;
+        $this->path = ltrim($path, '/');
         return $this;
     }
 
@@ -139,6 +140,7 @@ class ApiRequest
     /**
      * Build request uri
      * @return string
+     * @throws Exception
      */
     private function getRequestUri(){
         $base_domain = $this->getApi()->getApiBaseUri();
@@ -159,6 +161,7 @@ class ApiRequest
      * Execute and build ApiResponse
      * @return ApiResponse
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws Exception
      */
     public function execute()
     {
@@ -166,8 +169,10 @@ class ApiRequest
         if (!is_null($cm = Api::getInstance()->getCacheManager())){
             $responseData = $cm->getAdapter()->get($this->getRequestHash());
             $makeCurl = is_null($responseData);
+            $this->getApi()->log($makeCurl ? "Not found in cache": "Loaded from cache");
         }
         if ($makeCurl) {
+            $this->getApi()->log("Request to [{$this->getMethod()}] {$this->getRequestUri()} with ".json_encode($this->getParams()));
             $responseData = $this->getApi()
                 ->getAdapter()
                 ->execute(
@@ -179,6 +184,7 @@ class ApiRequest
 
             if (!is_null($cm)){
                 $cm->getAdapter()->set($this->getRequestHash(), $responseData, $cm->getTtl());
+                $this->getApi()->log("Stored data in cache");
             }
         }
 

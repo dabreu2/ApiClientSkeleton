@@ -37,6 +37,11 @@ class Api
     private $debug=false;
 
     /**
+     * @var Callable|null
+     */
+    private $logger;
+
+    /**
      * @var CacheManager
      */
     private $cacheManager=null;
@@ -80,6 +85,10 @@ class Api
             $inst->debug = $options['debug'];
         }
 
+        if (isset($options['logger'])){
+            $inst->logger = $options['logger'];
+        }
+
         if (isset($options['cache']) && !empty($options['cache'])){
             // set cache adapter
             if (!$options['cache']['adapter'] instanceof CacheInterface){
@@ -121,6 +130,16 @@ class Api
             throw new Exception("Api not initialized");
         }
         return self::$_instance;
+    }
+
+    /**
+     * @param string $message
+     * @param int $level
+     */
+    public function log(string $message, $level = E_WARNING){
+        if (!is_null($this->logger)){
+            $this->logger($message, $level);
+        }
     }
 
     /**
