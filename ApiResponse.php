@@ -62,10 +62,14 @@ class ApiResponse implements \JsonSerializable
     public static function fromString(string $data){
         $response = json_decode($data, true);
         $ret = new self();
-        $ret->statusCode = intval($response['statusCode']);
-        $ret->data = $response['data'];
-        $ret->error = $response['error'];
-        $ret->debug = $response['debug'];
+        $ret->statusCode = isset($response['statusCode']) ? intval($response['statusCode']) : 0;
+        $ret->data = isset($response['data']) ? $response['data'] : null;
+        if (isset($response['error'])) {
+            $ret->error = $response['error'];
+        }
+        if (isset($response['debug'])) {
+            $ret->debug = $response['debug'];
+        }
         return $ret;
     }
 
@@ -83,6 +87,7 @@ class ApiResponse implements \JsonSerializable
      * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
      * @return mixed data which can be serialized by <b>json_encode</b>,
      * which is a value of any type other than a resource.
+     * @throws \Exception
      * @since 5.4.0
      */
     public function jsonSerialize()

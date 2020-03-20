@@ -12,6 +12,7 @@ use CSApi\Adapters\Curl;
 use CSApi\Adapters\IAdapter;
 use CSApi\Cache\CacheManager;
 use Exception;
+use Monolog\Logger;
 use Psr\SimpleCache\CacheInterface;
 
 class Api
@@ -37,7 +38,7 @@ class Api
     private $debug=false;
 
     /**
-     * @var Callable|null
+     * @var Logger
      */
     private $logger;
 
@@ -133,13 +134,20 @@ class Api
     }
 
     /**
-     * @param string $message
+     * @return Logger
+     */
+    public function getLogger(): ?Logger{
+        return $this->logger;
+    }
+
+    /**
+     * @param $message
      * @param int $level
      */
-    public function log(string $message, $level = E_WARNING){
-        if (!is_null($this->logger)){
-            $logger = $this->logger;
-            $logger($message, $level);
+    public function log($message, $level = Logger::INFO){
+        if ($this->logger instanceof Logger){
+            $method = strtolower(Logger::getLevelName($level));
+            $this->logger->$method($message);
         }
     }
 
