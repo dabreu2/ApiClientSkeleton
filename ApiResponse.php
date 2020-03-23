@@ -62,12 +62,22 @@ class ApiResponse implements \JsonSerializable
     public static function fromString(string $data){
         $response = json_decode($data, true);
         $ret = new self();
-        $ret->statusCode = isset($response['statusCode']) ? intval($response['statusCode']) : 0;
-        $ret->data = isset($response['data']) ? $response['data'] : null;
-        if (isset($response['error'])) {
+
+        $ret->statusCode = 0;
+        if (array_key_exists('statusCode', $response)){
+            $ret->statusCode = (int) $response['statusCode'];
+        }
+
+        $ret->data = null;
+        if (array_key_exists('data', $response)){
+            $ret->data = $response['data'];
+        }
+
+        if (array_key_exists('error', $response)) {
             $ret->error = $response['error'];
         }
-        if (isset($response['debug'])) {
+
+        if (array_key_exists('debug', $response)) {
             $ret->debug = $response['debug'];
         }
         return $ret;
