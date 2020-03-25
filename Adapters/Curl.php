@@ -21,6 +21,11 @@ class Curl implements IAdapter
     protected $info;
 
     /**
+     * @var int
+     */
+    protected $error;
+
+    /**
      * Make adapter call
      * @param string $method
      * @param string $uri
@@ -60,11 +65,22 @@ class Curl implements IAdapter
 
         $response = curl_exec($curl);
         $info = curl_getinfo($curl);
+        $error = curl_errno($curl);
         curl_close($curl);
 
         return $this
             ->setResponse($response)
-            ->setInfo($info);
+            ->setInfo($info)
+            ->setError($error);
+    }
+
+    /**
+     * @param int $error
+     * @return $this
+     */
+    private function setError(int $error): Curl{
+        $this->error = $error;
+        return $this;
     }
 
     /**
@@ -72,7 +88,12 @@ class Curl implements IAdapter
      */
     public function getResponse(): string
     {
-        return $this->response;
+        $ret = [
+            'statusCode' => $this->getInfo()['http_code'],
+            'response' => $this->response,
+            'error' => $this->error !== 0
+        ];
+        return json_encode($ret);
     }
 
     /**

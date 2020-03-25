@@ -21,7 +21,7 @@ class ApiResponse implements \JsonSerializable
     private $debug;
 
     /** @var mixed */
-    private $data;
+    private $content;
 
     /**
      * @return int
@@ -34,7 +34,7 @@ class ApiResponse implements \JsonSerializable
     /**
      * @return mixed
      */
-    public function getError(): ?array
+    public function getError()
     {
         return $this->error;
     }
@@ -50,9 +50,9 @@ class ApiResponse implements \JsonSerializable
     /**
      * @return mixed
      */
-    public function getData()
+    public function getContent()
     {
-        return $this->data;
+        return $this->content;
     }
 
     /**
@@ -68,9 +68,9 @@ class ApiResponse implements \JsonSerializable
             $ret->statusCode = (int) $response['statusCode'];
         }
 
-        $ret->data = null;
-        if (array_key_exists('data', $response)){
-            $ret->data = $response['data'];
+        $ret->content = null;
+        if (array_key_exists('response', $response)){
+            $ret->content = json_decode($response['response'], true);
         }
 
         if (array_key_exists('error', $response)) {
@@ -104,7 +104,7 @@ class ApiResponse implements \JsonSerializable
     {
         $ret = [
             'statusCode' => $this->getStatusCode(),
-            'data' => $this->getData()
+            'content' => $this->getContent()
         ];
 
         if (!empty($this->getError())){

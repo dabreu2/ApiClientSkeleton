@@ -36,4 +36,4 @@ $cacheAdapter = new \CSApi\Cache\Adapter\MemcachePool($mCli);
 $testInfo = (new \CSApi\Objects\Test())
     ->get();
 
-print_r($testInfo->getData());
+print_r($testInfo->getContent());
