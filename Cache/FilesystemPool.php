@@ -29,7 +29,9 @@ class FilesystemPool extends AbstractCachePool
     public function __construct(string $cache_dir)
     {
         $this->cache_dir = rtrim($cache_dir, '/');
-        @mkdir($this->cache_dir, 0777, true);
+        if(!is_dir($this->cache_dir)){
+            @mkdir($this->cache_dir, 0777, true);
+        }
     }
 
     /**

@@ -190,7 +190,9 @@ class ApiRequest
 
     private function getRequestHash(){
         $str_params = $this->getParams();
-        ksort($str_params);
+        if(is_array($str_params)){
+            ksort($str_params);
+        }
         $str_params = json_encode($str_params);
         return md5($this->getMethod() .
             $this->getRequestUri() .
