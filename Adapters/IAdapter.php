@@ -18,7 +18,7 @@ interface IAdapter
      * @param array|null $extraHeaders
      * @return IAdapter
      */
-    public function execute(string $method, string $uri, ?array $params, array $extraHeaders = []);
+    public function execute(string $method, string $uri, ?array $params, ?array $extraHeaders);
 
     /**
      * @return string

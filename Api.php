@@ -125,7 +125,7 @@ class Api
      */
     public static function getInstance(){
         if (is_null(self::$_instance)) {
-            self::$_instance = new self();
+            self::$_instance = new static();
         }
         if (!self::$_instance->initialized){
             throw new Exception("Api not initialized");

@@ -33,7 +33,7 @@ class Curl implements IAdapter
      * @param array|null $extraHeaders
      * @return IAdapter
      */
-    public function execute(string $method, string $uri, ?array $params, array $extraHeaders = [])
+    public function execute(string $method, string $uri, ?array $params, ?array $extraHeaders)
     {
         $curl = curl_init();
 

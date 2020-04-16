@@ -13,6 +13,9 @@ use Exception;
 
 class ApiRequest
 {
+    /** @var Api */
+    private $api;
+
     /**
      * @var string
      */
@@ -57,17 +60,24 @@ class ApiRequest
     private $params;
 
     /**
+     * @var null|array
+     */
+    private $headers;
+
+    /**
      * @param string $method
      * @param string $path
      * @param array|null $params
+     * @param array|null $headers
      * @throws Exception
      */
-    public function __construct(string $method, string $path, ?array $params = null)
+    public function __construct(string $method, string $path, ?array $params = null, ?array $headers = null)
     {
         $this
             ->setMethod($method)
             ->setPath($path)
-            ->setParams($params);
+            ->setParams($params)
+            ->setHeaders($headers);
     }
 
     /**
@@ -75,7 +85,19 @@ class ApiRequest
      * @throws Exception
      */
     private function getApi(){
-        return Api::getInstance();
+        if (is_null($this->api)){
+            $this->api = Api::getInstance();
+        }
+        return $this->api;
+    }
+
+    /**
+     * @return $this
+     * @throws Exception
+     */
+    public function setApi($api){
+        $this->api = $api;
+        return $this;
     }
 
     /**
@@ -138,6 +160,24 @@ class ApiRequest
     }
 
     /**
+     * @return array|null
+     */
+    public function getHeaders(): ?array
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @param array|null $headers
+     * @return ApiRequest
+     */
+    public function setHeaders(?array $headers): ApiRequest
+    {
+        $this->headers = $headers;
+        return $this;
+    }
+
+    /**
      * Build request uri
      * @return string
      * @throws Exception
@@ -166,7 +206,7 @@ class ApiRequest
     public function execute()
     {
         $makeCurl = true;
-        if (!is_null($cm = Api::getInstance()->getCacheManager())){
+        if (!is_null($cm = $this->getApi()->getCacheManager())){
             $responseData = $cm->getAdapter()->get($this->getRequestHash());
             $makeCurl = is_null($responseData);
             $this->getApi()->log($makeCurl ? "Not found in cache": "Loaded from cache");
@@ -178,7 +218,8 @@ class ApiRequest
                 ->execute(
                     $this->getMethod(),
                     $this->getRequestUri(),
-                    $this->getParams()
+                    $this->getParams(),
+                    $this->getHeaders()
                 )
                 ->getResponse();
 
