@@ -19,7 +19,7 @@
         "ext-memcached": "*",
         "ext-json": "*",
         "ext-curl": "*",
-        "monolog/monolog": "^2.0"
+        "monolog/monolog": "1.24"
     },
     "autoload": {
         "psr-4": {
