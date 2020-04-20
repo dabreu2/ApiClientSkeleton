@@ -38,7 +38,7 @@ class Api
     private $debug=false;
 
     /**
-     * @var Logger
+     * @var Logger|Callable
      */
     private $logger;
 
@@ -134,9 +134,9 @@ class Api
     }
 
     /**
-     * @return Logger
+     * @return Logger|Callable
      */
-    public function getLogger(): ?Logger{
+    public function getLogger(){
         return $this->logger;
     }
 
@@ -148,6 +148,9 @@ class Api
         if ($this->logger instanceof Logger){
             $method = strtolower(Logger::getLevelName($level));
             $this->logger->$method($message);
+        }elseif(is_callable($this->logger)){
+            $l = $this->logger;
+            $l($message, $level);
         }
     }
 
