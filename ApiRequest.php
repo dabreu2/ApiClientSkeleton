@@ -9,6 +9,7 @@
 namespace CSApi;
 
 
+use CSApi\Interfaces\IAuthenticator;
 use Exception;
 
 class ApiRequest
@@ -86,7 +87,7 @@ class ApiRequest
      */
     private function getApi(){
         if (is_null($this->api)){
-            $this->api = Api::getInstance();
+            throw new Exception("ApiClient not specified");
         }
         return $this->api;
     }
@@ -161,10 +162,18 @@ class ApiRequest
 
     /**
      * @return array|null
+     * @throws Exception
      */
     public function getHeaders(): ?array
     {
-        return $this->headers;
+        $h = $this->headers;
+
+        // add authentication
+        if ($this->getApi()->getAuthenticator() instanceof IAuthenticator){
+            $h[] = 'Authentication: ' . $this->getApi()->getAuthenticator()->authenticate();
+        }
+
+        return $h;
     }
 
     /**
@@ -231,7 +240,7 @@ class ApiRequest
             }
         }
 
-        return ApiResponse::fromString($responseData);
+        return ApiResponse::fromString($responseData, $this->getApi()->isDebug());
     }
 
 }

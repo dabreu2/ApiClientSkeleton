@@ -46,8 +46,8 @@ class Curl implements IAdapter
             "Content-Type: application/json"
         ];
 
-        if (is_array($extraHeaders)){
-            $headers = array_merge($headers, $extraHeaders);
+        if (is_array($extraHeaders) && !empty($extraHeaders)){
+            $headers = $this->mergeHeaders($headers, $extraHeaders);
         }
 
         $options = [
@@ -79,6 +79,25 @@ class Curl implements IAdapter
             ->setInfo($info)
             ->setErrorCode($error)
             ->setErrorMsg($errorMsg);
+    }
+
+    /**
+     * Get unique headers
+     * @param $headers
+     * @param $extra
+     * @return array
+     */
+    private function mergeHeaders($headers, $extra){
+        $ret = [];
+        foreach ($headers as $header) {
+            $k = strtolower(trim(substr($header, 0, strpos($header, ':'))));
+            $ret[$k] = $header;
+        }
+        foreach ($extra as $header) {
+            $k = strtolower(trim(substr($header, 0, strpos($header, ':'))));
+            $ret[$k] = $header;
+        }
+        return array_values($ret);
     }
 
     /**

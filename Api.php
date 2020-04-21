@@ -11,22 +11,13 @@ namespace CSApi;
 use CSApi\Adapters\Curl;
 use CSApi\Adapters\IAdapter;
 use CSApi\Cache\CacheManager;
+use CSApi\Interfaces\IAuthenticator;
 use Exception;
 use Monolog\Logger;
 use Psr\SimpleCache\CacheInterface;
 
 class Api
 {
-    /**
-     * @var Api
-     */
-    private static $_instance = null;
-
-    /**
-     * @var $array
-     */
-    private $context;
-
     /**
      * @var string
      */
@@ -43,6 +34,11 @@ class Api
     private $logger;
 
     /**
+     * @var IAuthenticator
+     */
+    private $authenticator;
+
+    /**
      * @var CacheManager
      */
     private $cacheManager=null;
@@ -53,28 +49,15 @@ class Api
     private $clientAdapter;
 
     /**
-     * @var bool
-     */
-    private $initialized = false;
-
-    /**
      * @param string $api_base_uri
-     * @param array $context
      * @param array $options
-     * @return Api
      * @throws Exception
      */
-    public static function init(string $api_base_uri, array $context = [], array $options = [])
+    public function __construct(string $api_base_uri, array $options = [])
     {
-        try {
-            $inst = self::getInstance();
-        }catch(Exception $e){
-            $inst = self::$_instance;
-        }
-        $inst->api_base_uri = rtrim($api_base_uri, '/');
-        $inst->context = $context;
+        $this->api_base_uri = rtrim($api_base_uri, '/');
 
-        if (empty($inst->api_base_uri)){
+        if (empty($this->api_base_uri)){
             throw new Exception("API base domain missing");
         }
 
@@ -83,11 +66,15 @@ class Api
          */
 
         if (isset($options['debug'])){
-            $inst->debug = $options['debug'];
+            $this->debug = $options['debug'];
         }
 
         if (isset($options['logger'])){
-            $inst->logger = $options['logger'];
+            $this->logger = $options['logger'];
+        }
+
+        if (isset($options['authenticator'])){
+            $this->authenticator = $options['authenticator'];
         }
 
         if (isset($options['cache']) && !empty($options['cache'])){
@@ -95,12 +82,12 @@ class Api
             if (!$options['cache']['adapter'] instanceof CacheInterface){
                 throw new Exception("Cache handler must implements CacheInterface interface");
             }else{
-                $inst->cacheManager = new CacheManager($options['cache']['adapter']);
+                $this->cacheManager = new CacheManager($options['cache']['adapter']);
             }
 
             // set default ttl
             if (!empty($options['cache']['ttl'])){
-                $inst->cacheManager->setTtl((int) $options['cache']['ttl']);
+                $this->cacheManager->setTtl((int) $options['cache']['ttl']);
             }
         }
 
@@ -108,29 +95,11 @@ class Api
             if (!$options['adapter'] instanceof IAdapter){
                 throw new Exception("Adapter handler must implements IAdapter interface");
             }else{
-                $inst->clientAdapter = $options['adapter'];
+                $this->clientAdapter = $options['adapter'];
             }
         }else{
-            $inst->clientAdapter = new Curl();
+            $this->clientAdapter = new Curl();
         }
-
-        $inst->initialized = true;
-
-        return $inst;
-    }
-
-    /**
-     * @return Api
-     * @throws Exception
-     */
-    public static function getInstance(){
-        if (is_null(self::$_instance)) {
-            self::$_instance = new static();
-        }
-        if (!self::$_instance->initialized){
-            throw new Exception("Api not initialized");
-        }
-        return self::$_instance;
     }
 
     /**
@@ -138,6 +107,13 @@ class Api
      */
     public function getLogger(){
         return $this->logger;
+    }
+
+    /**
+     * @return IAuthenticator|null
+     */
+    public function getAuthenticator(){
+        return $this->authenticator;
     }
 
     /**
@@ -160,15 +136,6 @@ class Api
     public function isDebug(): bool
     {
         return $this->debug;
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getContext(): array
-    {
-        return $this->context;
     }
 
     /**

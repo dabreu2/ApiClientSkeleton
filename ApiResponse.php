@@ -23,6 +23,9 @@ class ApiResponse implements \JsonSerializable
     /** @var mixed */
     private $content;
 
+    /** @var bool */
+    private $isDebug;
+
     /**
      * @return int
      */
@@ -57,11 +60,13 @@ class ApiResponse implements \JsonSerializable
 
     /**
      * @param string $data
+     * @param bool $debug
      * @return ApiResponse
      */
-    public static function fromString(string $data){
+    public static function fromString(string $data, $debug = false){
         $response = json_decode($data, true);
         $ret = new self();
+        $ret->isDebug = $debug;
 
         $ret->statusCode = 0;
         if (array_key_exists('statusCode', $response)){
@@ -91,6 +96,12 @@ class ApiResponse implements \JsonSerializable
         return json_encode($this);
     }
 
+    /**
+     * @return bool
+     */
+    private function isDebug(){
+        return $this->isDebug;
+    }
 
     /**
      * Specify data which should be serialized to JSON
@@ -111,7 +122,7 @@ class ApiResponse implements \JsonSerializable
             $ret['error'] = $this->getError();
         }
 
-        if (Api::getInstance()->isDebug()){
+        if ($this->isDebug()) {
             $ret['debug'] = $this->getDebug();
         }
         return $ret;
