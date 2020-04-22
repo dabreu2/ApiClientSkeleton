@@ -230,7 +230,7 @@ class ApiRequest
                     $this->getMethod(),
                     $this->getRequestUri(),
                     $this->getParams(),
-                    $this->getHeaders(),
+                    $this->getHeaders()
                 )
                 ->getResponse();
 
