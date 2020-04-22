@@ -30,18 +30,19 @@ class Curl implements IAdapter
      */
     protected $errorMsg;
 
-    /**
-     * Make adapter call
-     * @param string $method
-     * @param string $uri
-     * @param array|null $params
-     * @param array|null $extraHeaders
-     * @return IAdapter
-     */
-    public function execute(string $method, string $uri, ?array $params, ?array $extraHeaders)
-    {
-        $curl = curl_init();
+    /** @var array|null */
+    private $options;
 
+    /**
+     * Curl constructor.
+     * @param array|null $options
+     */
+    function __construct($options = null)
+    {
+        $this->options = $options;
+    }
+
+    private function getOptions($uri, $method, $extraHeaders, $params){
         $headers = [
             "Content-Type: application/json"
         ];
@@ -62,9 +63,35 @@ class Curl implements IAdapter
             CURLOPT_HTTPHEADER => $headers
         ];
 
+        if (is_array($this->options) && !empty($this->options)) {
+            $options = array_replace($options, $this->options);
+        }
+
         if (!empty($params)){
             $options[CURLOPT_POSTFIELDS] = json_encode($params);
         }
+
+        return $options;
+    }
+
+    /**
+     * Make adapter call
+     * @param string $method
+     * @param string $uri
+     * @param array|null $params
+     * @param array|null $extraHeaders
+     * @return IAdapter
+     */
+    public function execute(string $method, string $uri, ?array $params, ?array $extraHeaders)
+    {
+        $curl = curl_init();
+
+        $options = $this->getOptions(
+            $uri,
+            $method,
+            $extraHeaders,
+            $params
+        );
 
         curl_setopt_array($curl, $options);
 

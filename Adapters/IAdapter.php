@@ -11,6 +11,12 @@ namespace CSApi\Adapters;
 interface IAdapter
 {
     /**
+     * IAdapter constructor.
+     * @param mixed|null $options
+     */
+    public function __construct($options = null);
+
+    /**
      * Make adapter call
      * @param string $method
      * @param string $uri
