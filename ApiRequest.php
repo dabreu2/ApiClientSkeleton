@@ -46,7 +46,8 @@ class ApiRequest
         self::METHOD_GET,
         self::METHOD_POST,
         self::METHOD_PUT,
-        self::METHOD_DELETE
+        self::METHOD_DELETE,
+	self::METHOD_PATCH
     ];
 
 
