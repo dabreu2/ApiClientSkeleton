@@ -9,12 +9,12 @@
 namespace CSApi\Interfaces;
 
 
-interface IAuthenticator
+interface IAuthorization
 {
     /**
-     * Return Authenticate string to use in ApiRequest
+     * Return authorization string to use in ApiRequest
      * @throws \Exception
      * @return string
      */
-    public function authenticate(): string;
+    public function authorizate(): string;
 }

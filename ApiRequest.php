@@ -9,7 +9,7 @@
 namespace CSApi;
 
 
-use CSApi\Interfaces\IAuthenticator;
+use CSApi\Interfaces\IAuthorization;
 use Exception;
 
 class ApiRequest
@@ -168,9 +168,9 @@ class ApiRequest
     {
         $h = $this->headers;
 
-        // add authentication
-        if ($this->getApi()->getAuthenticator() instanceof IAuthenticator){
-            $h[] = 'Authentication: ' . $this->getApi()->getAuthenticator()->authenticate();
+        // add authorization
+        if ($this->getApi()->getAuthorization() instanceof IAuthorization){
+            $h[] = 'Authorization: ' . $this->getApi()->getAuthorization()->authorizate();
         }
 
         return $h;

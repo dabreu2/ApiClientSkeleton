@@ -116,13 +116,16 @@ class Curl implements IAdapter
      */
     private function mergeHeaders($headers, $extra){
         $ret = [];
-        foreach ($headers as $header) {
-            $k = strtolower(trim(substr($header, 0, strpos($header, ':'))));
-            $ret[$k] = $header;
-        }
-        foreach ($extra as $header) {
-            $k = strtolower(trim(substr($header, 0, strpos($header, ':'))));
-            $ret[$k] = $header;
+        foreach ([$headers, $extra] as $entries) {
+            foreach ($entries as $k => $header) {
+                if (is_string($k) && !is_numeric($k)) {
+                    $k = strtolower($k);
+                    $header = "$k: $header";
+                } else {
+                    $k = strtolower(trim(substr($header, 0, strpos($header, ':'))));
+                }
+                $ret[$k] = $header;
+            }
         }
         return array_values($ret);
     }

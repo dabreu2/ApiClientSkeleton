@@ -11,13 +11,19 @@ namespace CSApi;
 use CSApi\Adapters\Curl;
 use CSApi\Adapters\IAdapter;
 use CSApi\Cache\CacheManager;
-use CSApi\Interfaces\IAuthenticator;
+use CSApi\Interfaces\IAuthorization;
 use Exception;
 use Monolog\Logger;
 use Psr\SimpleCache\CacheInterface;
 
 class Api
 {
+    const OPT_AUTHORIZATION = 'authorization';
+    const OPT_DEBUG = 'debug';
+    const OPT_LOGGER = 'logger';
+    const OPT_CACHE = 'cache';
+    const OPT_ADAPTER = 'adapter';
+
     /**
      * @var string
      */
@@ -34,9 +40,9 @@ class Api
     private $logger;
 
     /**
-     * @var IAuthenticator
+     * @var IAuthorization
      */
-    private $authenticator;
+    private $authorization;
 
     /**
      * @var CacheManager
@@ -65,37 +71,37 @@ class Api
          * load options
          */
 
-        if (isset($options['debug'])){
-            $this->debug = $options['debug'];
+        if (isset($options[self::OPT_DEBUG])){
+            $this->debug = $options[self::OPT_DEBUG];
         }
 
-        if (isset($options['logger'])){
-            $this->logger = $options['logger'];
+        if (isset($options[self::OPT_LOGGER])){
+            $this->logger = $options[self::OPT_LOGGER];
         }
 
-        if (isset($options['authenticator'])){
-            $this->authenticator = $options['authenticator'];
+        if (isset($options[self::OPT_AUTHORIZATION])){
+            $this->authorization = $options[self::OPT_AUTHORIZATION];
         }
 
-        if (isset($options['cache']) && !empty($options['cache'])){
+        if (isset($options[self::OPT_CACHE]) && !empty($options[self::OPT_CACHE])){
             // set cache adapter
-            if (!$options['cache']['adapter'] instanceof CacheInterface){
+            if (!$options[self::OPT_CACHE]['adapter'] instanceof CacheInterface){
                 throw new Exception("Cache handler must implements CacheInterface interface");
             }else{
-                $this->cacheManager = new CacheManager($options['cache']['adapter']);
+                $this->cacheManager = new CacheManager($options[self::OPT_CACHE]['adapter']);
             }
 
             // set default ttl
-            if (!empty($options['cache']['ttl'])){
-                $this->cacheManager->setTtl((int) $options['cache']['ttl']);
+            if (!empty($options[self::OPT_CACHE]['ttl'])){
+                $this->cacheManager->setTtl((int) $options[self::OPT_CACHE]['ttl']);
             }
         }
 
-        if (isset($options['adapter']) && !empty($options['adapter'])){
-            if (!$options['adapter'] instanceof IAdapter){
+        if (isset($options[self::OPT_ADAPTER]) && !empty($options[self::OPT_ADAPTER])){
+            if (!$options[self::OPT_ADAPTER] instanceof IAdapter){
                 throw new Exception("Adapter handler must implements IAdapter interface");
             }else{
-                $this->clientAdapter = $options['adapter'];
+                $this->clientAdapter = $options[self::OPT_ADAPTER];
             }
         }else{
             $this->clientAdapter = new Curl();
@@ -110,10 +116,10 @@ class Api
     }
 
     /**
-     * @return IAuthenticator|null
+     * @return IAuthorization|null
      */
-    public function getAuthenticator(){
-        return $this->authenticator;
+    public function getAuthorization(){
+        return $this->authorization;
     }
 
     /**
