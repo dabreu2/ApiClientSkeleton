@@ -37,11 +37,17 @@ class ApiRequest
      */
     const METHOD_PUT = 'PUT';
 
+    /**
+     * @var string
+     */
+    const METHOD_PATCH = 'PATCH';
+
     private $ALLOWED_METHODS = [
         self::METHOD_GET,
         self::METHOD_POST,
         self::METHOD_PUT,
-        self::METHOD_DELETE
+        self::METHOD_DELETE,
+	self::METHOD_PATCH
     ];
 
 
