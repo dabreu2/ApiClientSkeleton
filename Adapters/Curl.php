@@ -42,6 +42,13 @@ class Curl implements IAdapter
         $this->options = $options;
     }
 
+    /**
+     * @param $uri
+     * @param $method
+     * @param $extraHeaders
+     * @param $params
+     * @return array
+     */
     private function getOptions($uri, $method, $extraHeaders, $params){
         $headers = [
             "Content-Type: application/json"
@@ -52,7 +59,6 @@ class Curl implements IAdapter
         }
 
         $options = [
-            CURLOPT_URL => $uri,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
@@ -67,9 +73,15 @@ class Curl implements IAdapter
             $options = array_replace($options, $this->options);
         }
 
-        if (!empty($params)){
-            $options[CURLOPT_POSTFIELDS] = json_encode($params);
+        if (!empty($params)) {
+            if ($method == 'GET') {
+                $uri .= (strpos($uri, '?') === false ? '?' : '&') . http_build_query($params);
+            } else {
+                $options[CURLOPT_POSTFIELDS] = json_encode($params);
+            }
         }
+        $options[CURLOPT_URL] = $uri;
+
 
         return $options;
     }
