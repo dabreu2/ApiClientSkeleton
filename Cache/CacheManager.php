@@ -9,29 +9,37 @@
 namespace CSApi\Cache;
 
 
+use CSApi\ApiRequest;
 use Psr\SimpleCache\CacheInterface;
 
 class CacheManager
 {
+    const CMO_TTL = 'ttl';
+    const CMO_HTTP_METHODS = 'http_methods';
+    const CMO_HTTP_CODES = 'http_codes';
+
     /**
      * @var CacheInterface
      */
     private $adapter;
 
-    /**
-     * @var integer
-     */
-    private $ttl;
+    private $default_options = [
+        self::CMO_TTL => 300,
+        self::CMO_HTTP_METHODS => [ApiRequest::METHOD_GET],
+        self::CMO_HTTP_CODES => '2\d\d'
+    ];
+
+    /** @var array  */
+    private $options = [];
 
     /**
      * CacheManager constructor.
      * @param CacheInterface $adapter
-     * @param int $ttl
      */
-    public function __construct(CacheInterface $adapter, int $ttl=300)
+    public function __construct(CacheInterface $adapter)
     {
         $this->adapter = $adapter;
-        $this->ttl = $ttl;
+        $this->options = $this->default_options;
     }
 
     /**
@@ -43,11 +51,27 @@ class CacheManager
     }
 
     /**
-     * @return int
+     * @return array
      */
-    public function getTtl(): int
+    public function getOptions(): array
     {
-        return $this->ttl;
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     * @return CacheManager
+     */
+    public function setOptions(array $options): CacheManager
+    {
+        $ret = $this->default_options;
+        foreach ($ret as $k => $v) {
+            if (isset($options[$k])){
+                $ret[$k] = $options[$k];
+            }
+        }
+        $this->options = $ret;
+        return $this;
     }
 
     /**
@@ -61,12 +85,23 @@ class CacheManager
     }
 
     /**
-     * @param int $ttl
-     * @return CacheManager
+     * @param ApiRequest $request
+     * @param string $responseData
+     * @return bool
+     * @throws \Exception
      */
-    public function setTtl(int $ttl): CacheManager
-    {
-        $this->ttl = $ttl;
-        return $this;
+    public function mustCacheResponse(ApiRequest $request, string $responseData){
+        // check method allowed to cache
+        if (!in_array(strtoupper($request->getMethod()), $this->getOptions()[self::CMO_HTTP_METHODS])){
+            return false;
+        }
+
+        // check http_code allowed to cache
+        $data = json_decode($responseData, true);
+        if (!preg_match('/^'.$this->getOptions()[self::CMO_HTTP_CODES].'$/', $data['statusCode'])){
+            return false;
+        }
+
+        return true;
     }
 }

@@ -91,10 +91,8 @@ class Api
                 $this->cacheManager = new CacheManager($options[self::OPT_CACHE]['adapter']);
             }
 
-            // set default ttl
-            if (!empty($options[self::OPT_CACHE]['ttl'])){
-                $this->cacheManager->setTtl((int) $options[self::OPT_CACHE]['ttl']);
-            }
+            // set user options
+            $this->cacheManager->setOptions($options[self::OPT_CACHE]);
         }
 
         if (isset($options[self::OPT_ADAPTER]) && !empty($options[self::OPT_ADAPTER])){

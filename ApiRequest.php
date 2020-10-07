@@ -9,6 +9,7 @@
 namespace CSApi;
 
 
+use CSApi\Cache\CacheManager;
 use CSApi\Interfaces\IAuthorization;
 use Exception;
 
@@ -240,8 +241,8 @@ class ApiRequest
                 )
                 ->getResponse();
 
-            if (!is_null($cm)){
-                $cm->getAdapter()->set($this->getRequestHash(), $responseData, $cm->getTtl());
+            if (!is_null($cm) && $cm->mustCacheResponse($this, $responseData)){
+                $cm->getAdapter()->set($this->getRequestHash(), $responseData, $cm->getOptions()[CacheManager::CMO_TTL]);
                 $this->getApi()->log("Stored data in cache");
             }
         }
