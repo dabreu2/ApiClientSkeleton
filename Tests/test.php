@@ -6,6 +6,9 @@
  * Time: 10:33 a. m.
  */
 
+use CSApi\Adapters\Curl;
+use CSApi\Api;
+
 include "vendor/autoload.php";
 
 error_reporting(E_ERROR);
@@ -16,25 +19,27 @@ $mCli->addServer('localhost', 11211);
 
 $cacheAdapter = new \CSApi\Cache\Adapter\MemcachePool($mCli);
 
-\CSApi\Api::init(
-    'http://domain.com/api/v1',
+$api = new Api(
+    'https://currency.bunkerdb.com/api/',
     [
-        'clientId' => 'app1',
-        'serviceId' => 'service1'
-    ],
-    [
-        'debug' => true,
-        'cache' => [
+        Api::OPT_CACHE => [
             'adapter' => $cacheAdapter,
-            'ttl' => 20,
-            \CSApi\Cache\CacheManager::CMO_CACHE_HEADER_RULES=>['api-context']
-        ]
+            'ttl' => 30,
+            \CSApi\Cache\CacheManager::CMO_USE_HEADERS_CACHE=>true
+        ],
+        Api::OPT_ADAPTER => new Curl([
+            CURLOPT_TIMEOUT => 600
+        ])
     ]
 );
 
-
-// Object driven request
-$testInfo = (new \CSApi\Objects\Test())
-    ->get();
-
-print_r($testInfo->getData());
+$result = (new \CSApi\ApiRequest(
+    \CSApi\ApiRequest::METHOD_GET,
+    "history/getrate/2021-12-12/USD/uyu",
+    null,
+    [
+        'bapi-context: {"otype":"campaign","oid":"4822","period_id":"mnt","period_start":"2021-04-01","period_end":"2021-04-30"}'
+    ]
+)
+)->setApi($api)->execute();
+var_dump($result);
