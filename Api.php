@@ -89,6 +89,8 @@ class Api
                 throw new Exception("Cache handler must implements CacheInterface interface");
             }else{
                 $this->cacheManager = new CacheManager($options[self::OPT_CACHE]['adapter']);
+                //remove adapter to not added plus in options
+                unset($options[self::OPT_CACHE]['adapter']);
             }
 
             // set user options

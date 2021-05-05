@@ -26,7 +26,8 @@ $cacheAdapter = new \CSApi\Cache\Adapter\MemcachePool($mCli);
         'debug' => true,
         'cache' => [
             'adapter' => $cacheAdapter,
-            'ttl' => 20
+            'ttl' => 20,
+            \CSApi\Cache\CacheManager::CMO_CACHE_HEADER_RULES=>['api-context']
         ]
     ]
 );
