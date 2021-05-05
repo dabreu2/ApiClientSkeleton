@@ -17,7 +17,7 @@ class CacheManager
     const CMO_TTL = 'ttl';
     const CMO_HTTP_METHODS = 'http_methods';
     const CMO_HTTP_CODES = 'http_codes';
-    const CMO_CACHE_HEADER_RULES = 'cache_header_rules';
+    const CMO_USE_HEADERS_CACHE = 'cache_header';
 
     /**
      * @var CacheInterface
@@ -28,7 +28,7 @@ class CacheManager
         self::CMO_TTL => 300,
         self::CMO_HTTP_METHODS => [ApiRequest::METHOD_GET],
         self::CMO_HTTP_CODES => '2\d\d',
-        self::CMO_CACHE_HEADER_RULES => []
+        self::CMO_USE_HEADERS_CACHE => false
     ];
 
     /** @var array */
@@ -95,15 +95,10 @@ class CacheManager
         }
         $str_params = json_encode($str_params);
         $headers = '';
-        if ($this->options[self::CMO_CACHE_HEADER_RULES]) {
-            $aux = [];
-            foreach ($this->options[self::CMO_CACHE_HEADER_RULES] as $header) {
-                $aux[] = json_encode($request->getHeaders()[$headers]);
-            }
-            $headers = implode("|", $aux);
+        if ($this->options[self::CMO_USE_HEADERS_CACHE]) {
+            $headers = implode("|",$request->getHeaders());
         }
-
-        return md5($request->getMethod() .
+        return  md5($request->getMethod() .
             $request->getRequestUri() .
             $headers .
             $str_params);
