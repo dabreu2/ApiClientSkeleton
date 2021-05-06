@@ -198,7 +198,7 @@ class ApiRequest
      * @return string
      * @throws Exception
      */
-    private function getRequestUri(){
+    public function getRequestUri(){
         $base_domain = $this->getApi()->getApiBaseUri();
         $path = $this->getPath();
         return "{$base_domain}/{$path}";
@@ -225,7 +225,7 @@ class ApiRequest
     {
         $makeCurl = true;
         if (!is_null($cm = $this->getApi()->getCacheManager())){
-            $responseData = $cm->getAdapter()->get($this->getRequestHash());
+            $responseData = $cm->get($this);
             $makeCurl = is_null($responseData);
             $this->getApi()->log($makeCurl ? "Not found in cache": "Loaded from cache");
         }
@@ -242,7 +242,7 @@ class ApiRequest
                 ->getResponse();
 
             if (!is_null($cm) && $cm->mustCacheResponse($this, $responseData)){
-                $cm->getAdapter()->set($this->getRequestHash(), $responseData, $cm->getOptions()[CacheManager::CMO_TTL]);
+                $cm->set($this, $responseData);
                 $this->getApi()->log("Stored data in cache");
             }
         }
