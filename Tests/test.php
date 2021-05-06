@@ -13,19 +13,22 @@ include "vendor/autoload.php";
 
 error_reporting(E_ERROR);
 
-//$cacheAdapter = new \CSApi\Cache\Adapter\FilesystemPool('./_cache');
-$mCli = class_exists('Memcached') ? new \Memcached() : new \Memcache();
-$mCli->addServer('localhost', 11211);
-
-$cacheAdapter = new \CSApi\Cache\Adapter\MemcachePool($mCli);
+$cacheAdapter = new \CSApi\Cache\Adapter\FilesystemPool('/tmp');
+//$mCli = class_exists('Memcached') ? new \Memcached() : new \Memcache();
+//$mCli->addServer('localhost', 11211);
+//
+//$cacheAdapter = new \CSApi\Cache\Adapter\MemcachePool($mCli);
 
 $api = new Api(
     'https://currency.bunkerdb.com/api/',
     [
+        Api::OPT_LOGGER => function ($message, $level) {
+            echo "LOG: ".$message."\n";
+        },
         Api::OPT_CACHE => [
             'adapter' => $cacheAdapter,
             'ttl' => 30,
-            \CSApi\Cache\CacheManager::CMO_USE_HEADERS_CACHE=>true
+            \CSApi\Cache\CacheManager::CMO_HTTP_HEADERS=>['bapi-context']
         ],
         Api::OPT_ADAPTER => new Curl([
             CURLOPT_TIMEOUT => 600
