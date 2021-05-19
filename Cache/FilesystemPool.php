@@ -69,7 +69,7 @@ class FilesystemPool extends AbstractCachePool
         $filename = $this->cache_dir . '/' . $key;
 
 
-        $data = @unserialize(file_get_contents($filename));
+        $data = file_exists($filename) ? @unserialize(file_get_contents($filename)) : false;
         if ($data === false) {
             return $empty;
         }
