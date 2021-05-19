@@ -18,7 +18,8 @@
         "ext-memcached": "*",
         "ext-json": "*",
         "ext-curl": "*",
-        "monolog/monolog": "*"
+        "monolog/monolog": "*",
+        "ext-redis": "*"
     },
     "autoload": {
         "psr-4": {

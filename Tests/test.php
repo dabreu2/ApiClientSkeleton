@@ -13,11 +13,16 @@ include "vendor/autoload.php";
 
 error_reporting(E_ERROR);
 
-$cacheAdapter = new \CSApi\Cache\Adapter\FilesystemPool('/tmp');
+//$cacheAdapter = new \CSApi\Cache\Adapter\FilesystemPool('/tmp');
+
 //$mCli = class_exists('Memcached') ? new \Memcached() : new \Memcache();
 //$mCli->addServer('localhost', 11211);
 //
 //$cacheAdapter = new \CSApi\Cache\Adapter\MemcachePool($mCli);
+
+$rCli = new Redis();
+$rCli->connect('127.0.0.1');
+$cacheAdapter = new \CSApi\Cache\Adapter\RedisPool($rCli);
 
 $api = new Api(
     'https://currency.bunkerdb.com/api/',
