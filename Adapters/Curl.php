@@ -50,14 +50,25 @@ class Curl implements IAdapter
      * @return array
      */
     private function getOptions($uri, $method, $extraHeaders, $params){
+        // default headers
         $headers = [
             "Content-Type: application/json"
         ];
 
+        // add content-length if needed
+        if (!empty($params)) {
+            $content_length = strlen($method == 'GET'
+                ? http_build_query($params)
+                : json_encode($params));
+            $headers[] = "Content-Length: ".$content_length;
+        }
+
+        // merge default headers with extra headers
         if (is_array($extraHeaders) && !empty($extraHeaders)){
             $headers = $this->mergeHeaders($headers, $extraHeaders);
         }
 
+        // define base options
         $options = [
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_RETURNTRANSFER => true,
@@ -65,14 +76,15 @@ class Curl implements IAdapter
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_CONNECTTIMEOUT => 30,
-            CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_HTTPHEADER => $headers
+            CURLOPT_CUSTOMREQUEST => $method
         ];
 
+        // replace with adapter initialization options
         if (is_array($this->options) && !empty($this->options)) {
             $options = array_replace($options, $this->options);
         }
 
+        // build url or set post_fields
         if (!empty($params)) {
             if ($method == 'GET') {
                 $uri .= (strpos($uri, '?') === false ? '?' : '&') . http_build_query($params);
@@ -80,8 +92,10 @@ class Curl implements IAdapter
                 $options[CURLOPT_POSTFIELDS] = json_encode($params);
             }
         }
-        $options[CURLOPT_URL] = $uri;
 
+        // set url and headers to options
+        $options[CURLOPT_HTTPHEADER] = $headers;
+        $options[CURLOPT_URL] = $uri;
 
         return $options;
     }
