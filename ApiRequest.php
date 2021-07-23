@@ -187,8 +187,6 @@ class ApiRequest
         if ($UberTraceSpan = $this->getApi()->getOpenTracing()->getUberTraceId()) {
             $h[] = 'uber-trace-id: ' . $UberTraceSpan;
         }
-
-        print_r($h);
         return $h;
     }
 

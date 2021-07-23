@@ -122,7 +122,6 @@ class OpenTracing implements ITracing
                 $spanCtx->getFlags()
             );
         }
-        print_r($this->spanScope);
         return $result;
     }
 }
