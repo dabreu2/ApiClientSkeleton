@@ -9,9 +9,11 @@
 namespace CSApi;
 
 
+use App\Infraestructure\Adapters\MessengerTLMS;
 use CSApi\Cache\CacheManager;
 use CSApi\Interfaces\IAuthorization;
 use Exception;
+use OpenTracing\GlobalTracer;
 
 class ApiRequest
 {
@@ -71,6 +73,8 @@ class ApiRequest
      * @var null|array
      */
     private $headers;
+
+    private $spanScope;
 
     /**
      * @param string $method
@@ -180,6 +184,11 @@ class ApiRequest
             $h[] = 'Authorization: ' . $this->getApi()->getAuthorization()->authorizate();
         }
 
+        if ($UberTraceSpan = $this->getApi()->getOpenTracing()->getUberTraceId()) {
+            $h[] = 'uber-trace-id: ' . $UberTraceSpan;
+        }
+
+        print_r($h);
         return $h;
     }
 
@@ -223,6 +232,8 @@ class ApiRequest
      */
     public function execute()
     {
+        $this->getApi()->getOpenTracing()->start();
+
         $makeCurl = true;
         if (!is_null($cm = $this->getApi()->getCacheManager())){
             $responseData = $cm->get($this);
@@ -247,7 +258,22 @@ class ApiRequest
             }
         }
 
-        return ApiResponse::fromString($responseData, $this->getApi()->isDebug());
+        $this->getApi()->getOpenTracing()->setTag('useCache', !$makeCurl);
+        $this->getApi()->getOpenTracing()->setTag('endpoint', $this->getRequestUri());
+        $this->getApi()->getOpenTracing()->setTag('method', $this->getMethod());
+
+        $result = ApiResponse::fromString($responseData, $this->getApi()->isDebug());
+
+        $this->getApi()->getOpenTracing()->log([
+            'request' => [
+                'headers' => $this->getHeaders(),
+                'params' => $this->getParams(),
+            ],
+            'response' => $result->jsonSerialize()
+        ]);
+
+        $this->getApi()->getOpenTracing()->close();
+        return $result;
     }
 
 }

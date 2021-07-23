@@ -12,6 +12,8 @@ use CSApi\Adapters\Curl;
 use CSApi\Adapters\IAdapter;
 use CSApi\Cache\CacheManager;
 use CSApi\Interfaces\IAuthorization;
+use CSApi\OpenTracing\ITracing;
+use CSApi\OpenTracing\OpenTracing;
 use Exception;
 use Monolog\Logger;
 use Psr\SimpleCache\CacheInterface;
@@ -23,6 +25,7 @@ class Api
     const OPT_LOGGER = 'logger';
     const OPT_CACHE = 'cache';
     const OPT_ADAPTER = 'adapter';
+    const OPT_OPENTRACING = 'opentracing';
 
     /**
      * @var string
@@ -54,6 +57,10 @@ class Api
      */
     private $clientAdapter;
 
+
+    /** @var OpenTracing */
+    private $openTracing;
+
     /**
      * @param string $api_base_uri
      * @param array $options
@@ -71,6 +78,7 @@ class Api
          * load options
          */
 
+
         if (isset($options[self::OPT_DEBUG])){
             $this->debug = $options[self::OPT_DEBUG];
         }
@@ -83,6 +91,9 @@ class Api
             $this->authorization = $options[self::OPT_AUTHORIZATION];
         }
 
+        /**
+         * CacheManager
+         */
         if (isset($options[self::OPT_CACHE]) && !empty($options[self::OPT_CACHE])){
             // set cache adapter
             if (!$options[self::OPT_CACHE]['adapter'] instanceof CacheInterface){
@@ -106,6 +117,11 @@ class Api
         }else{
             $this->clientAdapter = new Curl();
         }
+
+        /**
+         * OpenTracing
+         */
+        $this->openTracing = new OpenTracing($options[self::OPT_OPENTRACING]);
     }
 
     /**
@@ -165,5 +181,13 @@ class Api
      */
     public function getAdapter(){
         return $this->clientAdapter;
+    }
+
+    /**
+     * @return OpenTracing
+     */
+    public function getOpenTracing(): OpenTracing
+    {
+        return $this->openTracing;
     }
 }
