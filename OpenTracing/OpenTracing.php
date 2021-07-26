@@ -95,7 +95,7 @@ class OpenTracing implements ITracing
     {
         if ($this->allowTracing()) {
             // add defined tags in options if have
-            $tags = $this->options[self::TAGS];
+            $tags = $this->options[self::TAGS] ?? [];
             if (is_array($tags) && count($tags) > 0){
                 foreach ($tags as $key => $value) {
                     $this->setTag($key, $value);
