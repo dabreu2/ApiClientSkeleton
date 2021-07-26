@@ -121,7 +121,7 @@ class Api
         /**
          * OpenTracing
          */
-        $this->openTracing = new OpenTracing($options[self::OPT_OPENTRACING]);
+        $this->openTracing = new OpenTracing($options[self::OPT_OPENTRACING] ?? []);
     }
 
     /**

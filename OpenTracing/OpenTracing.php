@@ -29,9 +29,10 @@ class OpenTracing implements ITracing
 
     /**
      * OpenTracing constructor.
-     * @param null|array $options
+     * @param array $options
+     * @throws \Exception
      */
-    public function __construct(?array $options = null)
+    public function __construct(array $options)
     {
         $this->options = $options;
         $this->hasOptions = is_array($options) && count($options) > 0;
