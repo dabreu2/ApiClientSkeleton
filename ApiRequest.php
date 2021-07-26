@@ -74,7 +74,8 @@ class ApiRequest
      */
     private $headers;
 
-    private $spanScope;
+    /** @var bool  */
+    private $requireSignature = false;
 
     /**
      * @param string $method
@@ -101,6 +102,15 @@ class ApiRequest
             throw new Exception("ApiClient not specified");
         }
         return $this->api;
+    }
+
+    /**
+     * @param bool $sign
+     * @return $this
+     */
+    public function setSigned(bool $sign = false): self{
+        $this->requireSignature = $sign;
+        return $this;
     }
 
     /**
@@ -179,14 +189,22 @@ class ApiRequest
     {
         $h = $this->headers;
 
-        // add authorization
+        // Add authorization
         if ($this->getApi()->getAuthorization() instanceof IAuthorization){
             $h[] = 'Authorization: ' . $this->getApi()->getAuthorization()->authorizate();
         }
 
+        // Add tracing
         if ($UberTraceSpan = $this->getApi()->getOpenTracing()->getUberTraceId()) {
             $h[] = 'uber-trace-id: ' . $UberTraceSpan;
         }
+
+        // Add Hub Signature
+        if ($this->requireSignature &&
+            $signature = $this->getApi()->getContentSignature(json_encode($this->getParams()))){
+            $h[] = 'x-hub-signature: ' . $signature;
+        }
+
         return $h;
     }
 

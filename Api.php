@@ -26,6 +26,7 @@ class Api
     const OPT_CACHE = 'cache';
     const OPT_ADAPTER = 'adapter';
     const OPT_OPENTRACING = 'opentracing';
+    const OPT_HUB_SECRET = 'hubSign';
 
     /**
      * @var string
@@ -60,6 +61,9 @@ class Api
 
     /** @var OpenTracing */
     private $openTracing;
+
+    /** @var string */
+    private $hubSign;
 
     /**
      * @param string $api_base_uri
@@ -122,6 +126,11 @@ class Api
          * OpenTracing
          */
         $this->openTracing = new OpenTracing($options[self::OPT_OPENTRACING] ?? []);
+
+        /**
+         * Hub secret (Signature request)
+         */
+        $this->hubSign = $options[self::OPT_HUB_SECRET] ?? null;
     }
 
     /**
@@ -189,5 +198,17 @@ class Api
     public function getOpenTracing(): OpenTracing
     {
         return $this->openTracing;
+    }
+
+    /**
+     * @param string $content
+     * @return false|string
+     */
+    public function getContentSignature(string $content){
+        if (!is_null($this->hubSign)){
+            return hash_hmac('sha1', $content, $this->hubSign);
+        }else {
+            return false;
+        }
     }
 }
