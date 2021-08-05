@@ -200,8 +200,17 @@ class ApiRequest
         }
 
         // Add Hub Signature
-        if ($this->requireSignature &&
-            $signature = $this->getApi()->getContentSignature(json_encode($this->getParams()))){
+        if ($this->requireSignature){
+            if($this->getMethod() == self::METHOD_POST){
+                $content = $this->getParams();
+            }else{
+                $query_string = parse_url($this->getRequestUri(), PHP_URL_QUERY);
+                parse_str($query_string, $content);
+            }
+
+            $signature = $this->getApi()->getContentSignature(
+                json_encode($content)
+            );
             $h[] = 'x-hub-signature: ' . $signature;
         }
 
