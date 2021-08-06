@@ -72,7 +72,7 @@ class ApiHubSignature
     {
         if (!is_null($this->secret)){
             return hash_equals(
-                hash_hmac('sha1', $content, $this->secret),
+                $this->getSignature($content),
                 $signature
             );
         }else {
