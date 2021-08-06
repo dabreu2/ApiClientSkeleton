@@ -17,6 +17,7 @@ class OpenTracing implements ITracing
     const SPAN_OPTIONS = 'spanOpts';
     const OPERATION_NAME = 'operationName';
     const TAGS = 'tags';
+    const FORMAT = 'format';
 
     /**
      * @var array|null
@@ -109,20 +110,19 @@ class OpenTracing implements ITracing
     }
 
     /**
-     * @return string|null
+     * @param array $carrier
+     * @return bool
      */
-    public function getUberTraceId(): ?string
+    public function injectTrace(array &$carrier): bool
     {
-        $result = null;
         if ($this->allowTracing()) {
-            $spanCtx = $this->spanScope->getSpan()->getContext();
-            $result = sprintf('%x:%x:%x:%x',
-                $spanCtx->getTraceId(),
-                $spanCtx->getSpanId(),
-                $spanCtx->getParentId() ?? 0,
-                $spanCtx->getFlags()
+            \OpenTracing\GlobalTracer::get()->inject(
+                $this->spanScope->getSpan()->getContext(),
+                $this->options[self::FORMAT] ?? 'http_headers',
+                $carrier
             );
+            return true;
         }
-        return $result;
+        return false;
     }
 }

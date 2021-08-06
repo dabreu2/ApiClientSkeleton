@@ -12,7 +12,6 @@ use CSApi\Adapters\Curl;
 use CSApi\Adapters\IAdapter;
 use CSApi\Cache\CacheManager;
 use CSApi\Interfaces\IAuthorization;
-use CSApi\OpenTracing\ITracing;
 use CSApi\OpenTracing\OpenTracing;
 use Exception;
 use Monolog\Logger;
@@ -64,6 +63,10 @@ class Api
 
     /** @var string */
     private $hubSign;
+    /**
+     * @var ApiHubSignature
+     */
+    private $hubSignatureMgr;
 
     /**
      * @param string $api_base_uri
@@ -201,14 +204,13 @@ class Api
     }
 
     /**
-     * @param string $content
-     * @return false|string
+     * @return ApiHubSignature
      */
-    public function getContentSignature(string $content){
-        if (!is_null($this->hubSign)){
-            return hash_hmac('sha1', $content, $this->hubSign);
-        }else {
-            return false;
+    public function getHubSignature(): ApiHubSignature
+    {
+        if (is_null($this->hubSignatureMgr)) {
+            $this->hubSignatureMgr = new ApiHubSignature($this->hubSign);
         }
+        return $this->hubSignatureMgr;
     }
 }

@@ -9,11 +9,8 @@
 namespace CSApi;
 
 
-use App\Infraestructure\Adapters\MessengerTLMS;
-use CSApi\Cache\CacheManager;
 use CSApi\Interfaces\IAuthorization;
 use Exception;
-use OpenTracing\GlobalTracer;
 
 class ApiRequest
 {
@@ -187,7 +184,7 @@ class ApiRequest
      */
     public function getHeaders(): ?array
     {
-        $h = $this->headers;
+        $h = $this->headers ?? [];
 
         // Add authorization
         if ($this->getApi()->getAuthorization() instanceof IAuthorization){
@@ -195,23 +192,11 @@ class ApiRequest
         }
 
         // Add tracing
-        if ($UberTraceSpan = $this->getApi()->getOpenTracing()->getUberTraceId()) {
-            $h[] = 'uber-trace-id: ' . $UberTraceSpan;
-        }
+        $this->getApi()->getOpenTracing()->injectTrace($h);
 
         // Add Hub Signature
         if ($this->requireSignature){
-            if($this->getMethod() == self::METHOD_POST){
-                $content = $this->getParams();
-            }else{
-                $query_string = parse_url($this->getRequestUri(), PHP_URL_QUERY);
-                parse_str($query_string, $content);
-            }
-
-            $signature = $this->getApi()->getContentSignature(
-                json_encode($content)
-            );
-            $h[] = 'x-hub-signature: ' . $signature;
+            $this->getApi()->getHubSignature()->injectSignatureFromRequest($this, $h);
         }
 
         return $h;

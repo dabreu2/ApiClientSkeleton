@@ -35,13 +35,14 @@ $api = new Api(
             'ttl' => 30,
             \CSApi\Cache\CacheManager::CMO_HTTP_HEADERS=>['bapi-context']
         ],
+        Api::OPT_HUB_SECRET => '1234567890',
         Api::OPT_ADAPTER => new Curl([
             CURLOPT_TIMEOUT => 600
         ])
     ]
 );
 
-$result = (new \CSApi\ApiRequest(
+$request = (new \CSApi\ApiRequest(
     \CSApi\ApiRequest::METHOD_GET,
     "history/getrate/2021-12-12/USD/uyu",
     null,
@@ -49,5 +50,9 @@ $result = (new \CSApi\ApiRequest(
         'bapi-context: {"otype":"campaign","oid":"4822","period_id":"mnt","period_start":"2021-04-01","period_end":"2021-04-30"}'
     ]
 )
-)->setApi($api)->execute();
+)
+    ->setSigned(true)
+    ->setApi($api);
+var_dump($request->getHeaders());
+$result = $request->execute();
 var_dump($result);
