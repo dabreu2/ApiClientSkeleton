@@ -71,7 +71,10 @@ class ApiHubSignature
     public function verify(string $content, string $signature): bool
     {
         if (!is_null($this->secret)){
-            return hash_hmac('sha1', $content, $this->secret) == $signature;
+            return hash_equals(
+                hash_hmac('sha1', $content, $this->secret),
+                $signature
+            );
         }else {
             return false;
         }
