@@ -70,7 +70,7 @@ class OpenTracing implements ITracing
      */
     public function setTag(string $key, $value): ITracing
     {
-        if ($this->allowTracing()) {
+        if ($this->allowTracing() && !is_null($this->spanScope) && !is_null($this->spanScope->getSpan())) {
             $this->spanScope->getSpan()->setTag($key, $value);
         }
         return $this;
@@ -83,7 +83,7 @@ class OpenTracing implements ITracing
      */
     public function log(array $data = [], $timestamp = null): ITracing
     {
-        if ($this->allowTracing()) {
+        if ($this->allowTracing() && !is_null($this->spanScope) && !is_null($this->spanScope->getSpan())) {
             $this->spanScope->getSpan()->log($data, $timestamp);
         }
         return $this;
