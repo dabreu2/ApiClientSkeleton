@@ -45,7 +45,7 @@ class ApiHubSignature
         }
 
         $carrier['x-hub-signature'] = $this->getSignature(
-            json_encode($content,JSON_UNESCAPED_UNICODE)
+            json_encode($content,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)
         );
 
         return true;
