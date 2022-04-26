@@ -70,7 +70,7 @@ class Curl implements IAdapter
         ];
 
         if (is_array($this->options) && !empty($this->options)) {
-            $options = array_replace($options, $this->options);
+            $options = array_replace($this->options, $options);
         }
 
         if (!empty($params)) {
