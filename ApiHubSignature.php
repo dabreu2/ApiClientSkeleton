@@ -37,7 +37,7 @@ class ApiHubSignature
             return false;
         }
 
-        if ($request->getMethod() == ApiRequest::METHOD_POST) {
+        if ($request->getMethod() != ApiRequest::METHOD_GET) {
             $content = $request->getParams();
         } else {
             $query_string = parse_url($request->getRequestUri(), PHP_URL_QUERY);
