@@ -14,12 +14,9 @@
         "psr/cache": "^1.0",
         "psr/simple-cache": "^1.0",
         "cache/adapter-common": "^1.1",
-        "ext-memcache": "*",
-        "ext-memcached": "*",
         "ext-json": "*",
         "ext-curl": "*",
-        "monolog/monolog": "*",
-        "ext-redis": "*"
+        "monolog/monolog": "*"
     },
     "autoload": {
         "psr-4": {
