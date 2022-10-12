@@ -36,16 +36,8 @@ class ApiHubSignature
         if (is_null($this->secret)) {
             return false;
         }
-
-        if ($request->getMethod() != ApiRequest::METHOD_GET) {
-            $content = $request->getParams();
-        } else {
-            $query_string = parse_url($request->getRequestUri(), PHP_URL_QUERY);
-            parse_str($query_string, $content);
-        }
-
         $carrier['x-hub-signature'] = $this->getSignature(
-            json_encode($content)
+            json_encode($request->getParams())
         );
 
         return true;
